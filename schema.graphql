@@ -1,0 +1,116 @@
+enum Role {
+  ADMIN
+  Sharer
+  Moderator
+}
+
+type Permission {
+  isAdmin: Boolean
+  isSharer: Boolean
+  isModerator: Boolean
+}
+
+type User @entity(additionalFields: [{ path: "authId?", type: "string" }]) {
+  id: ID @id
+  name: String @column
+  permission: Permission @column
+}
+
+
+type AuthPayload {
+  access_token: String
+  token_type: String
+  expires_in: Int
+}
+
+type Story @entity(additionalFields: [{ path: "owner?", type: "string" }]) {
+  id: ID @id
+  approved: String @column
+  summary: String @column
+  source: String @column
+  subject: [Subject] @link
+}
+
+type Subject @entity(additionalFields: [{ path: "owner?", type: "string" }]) {
+  id: ID @id
+    value: String! @column
+}
+
+
+input CreateUserInput {
+  name: String!
+  email: String!
+  password: String!
+}
+
+input UpdateUserInput {
+  name: String
+}
+
+input LoginUserInput {
+  username: String!
+  password: String!
+}
+
+input AssignRoleInput {
+  role: Role
+}
+
+input RemoveRoleInput {
+  role: Role
+}
+
+
+input MystoriesCreateStoryInput {
+  summary: String
+  source: String
+  subject: [ID]
+}
+
+
+input SubjectsCreateSubjectInput {
+  value: String!
+}
+
+
+input MystoriesUpdateStoryInput {
+  summary: String
+  source: String
+  subject: [ID]
+}
+
+input ApprovalsUpdateStoryInput {
+  approved: String
+}
+
+input SubjectsUpdateSubjectInput {
+value: String!
+}
+
+
+type Query {
+  users: [User]
+  user(id: ID): [User]
+  mystory(id: ID!): Story
+  mystories:[Story]
+  approval(id: ID!): Story
+  approvals:[Story]
+  subject(id: ID!): Subject
+  subjects:[Subject]
+}
+
+type Mutation {
+  usersCreateUser(data: CreateUserInput): User
+  usersAssignRole(userId: ID!, data: AssignRoleInput): User
+  usersRemoveRole(userId: ID!, data: RemoveRoleInput): User
+
+  login(data: LoginUserInput): AuthPayload
+
+  mystoriesCreateStory( data: MystoriesCreateStoryInput): Story
+  subjectsCreateSubject( data: SubjectsCreateSubjectInput): Subject
+  mystoriesUpdateStory( storyId: ID!, data: MystoriesUpdateStoryInput): Story
+  approvalsUpdateStory( storyId: ID!, data: ApprovalsUpdateStoryInput): Story
+  subjectsUpdateSubject( subjectId: ID!, data: SubjectsUpdateSubjectInput): Subject
+  mystoriesDeleteStory( storyId: ID!): Boolean
+  subjectsDeleteSubject( subjectId: ID!): Boolean
+}

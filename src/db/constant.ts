@@ -1,0 +1,5 @@
+export const SCHEMA_NAMES = {
+  USERS: 'USERS',
+  STORIES: 'STORIES',
+  SUBJECTS: 'SUBJECTS',
+}
